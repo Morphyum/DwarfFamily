@@ -5,6 +5,9 @@ import java.util.ArrayList;
 public class Dwarf {
 	private Integer id;
 	private String name = "unknown";
+	private String newName = "Martin";
+	private String givnName = "unknown";
+	private String surnName = "unknown";
 	private String deathday= "unknown";
 	private String birthday= "unknown";
 	private String deathyear= "unknown";
@@ -28,6 +31,8 @@ public class Dwarf {
 	public void print() {
 		System.out.println("ID: " + id);
 		System.out.println("Name: " + name);
+		System.out.println("GIVN: " + givnName);
+		System.out.println("SURN: " + surnName);
 		System.out.println("Gender " + gender);
 		System.out.println("Birthdate " + birthday + " " + birthyear);
 		System.out.println("Deathdate: " + deathday + " " + deathyear);
@@ -52,6 +57,25 @@ public class Dwarf {
 	public String getGender() {
 		return gender;
 	}
+        
+        public String getCasedGender()
+        {
+            char[] raw = gender.toCharArray();
+                            
+            for(int i=0; i<raw.length; i++)
+            {
+                if(i==0 || Character.isWhitespace(raw[i-1]))
+                {
+                    raw[i] = Character.toUpperCase(raw[i]);
+                }
+                else
+                {
+                    raw[i] = Character.toLowerCase(raw[i]);
+                }
+            }
+
+            return String.valueOf(raw);
+        }
 
 	public void setGender(String gender) {
 		this.gender = gender;
@@ -74,9 +98,65 @@ public class Dwarf {
 	}
 
 	public String getName() {
+		String[] splitName = name.split("\\s+");
+			this.givnName = splitName[0];
+			if(splitName.length > 1){
+				this.surnName = splitName[splitName.length-1];
+			}
+			else{
+				this.surnName = "";
+			}
 		return name;
 	}
+        
+        public String getCasedName()
+        {
+            char[] raw = name.toCharArray();
+                            
+            for(int i=0; i<raw.length; i++)
+            {
+                if(i==0 || Character.isWhitespace(raw[i-1]))
+                {
+                    raw[i] = Character.toUpperCase(raw[i]);
+                }
+                else
+                {
+                    raw[i] = Character.toLowerCase(raw[i]);
+                }
+            }
 
+            return String.valueOf(raw);
+        }
+
+		public String getGIVName(){
+			String[] splitName = name.split("\\s+");
+			this.givnName = splitName[0];
+			if(splitName.length > 1){
+				this.surnName = splitName[splitName.length-1];
+			}
+			else{
+				this.surnName = "";
+			}
+			return givnName;
+		}
+		
+		public String getSURName(){
+			String[] splitName = name.split("\\s+");
+			this.givnName = splitName[0];
+			if(splitName.length > 1){
+				this.surnName = splitName[splitName.length-1];
+			}
+			else{
+				this.surnName = "";
+			}
+			return surnName;
+		}
+		
+		public String getNewName(){
+			this.newName = this.givnName + " /" + this.surnName + "/";
+			return newName;
+		}
+		
 	public void setName(String name) {
 		this.name = name;
 	}

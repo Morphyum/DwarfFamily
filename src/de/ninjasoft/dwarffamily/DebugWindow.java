@@ -4,18 +4,18 @@ import java.awt.FlowLayout;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import javax.swing.filechooser.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
-import org.xml.sax.SAXException;
-
 import javax.swing.JProgressBar;
+import org.xml.sax.SAXException;
 
 public class DebugWindow extends JFrame implements ActionListener {
 
@@ -26,9 +26,9 @@ public class DebugWindow extends JFrame implements ActionListener {
 
 	private ArrayList<Dwarf> dwarfList;
 	private JButton xmlImportButton = new JButton("Import a legends XML file");
-	private JButton gedExportButton = new JButton("GEDCOM file export test");
+	private JButton gedExportButton = new JButton("GEDCOM file export (experimental)");
 	private JButton viewDwarvesButton = new JButton("View dwarf list");
-	private final JProgressBar progressBar = new JProgressBar();
+	public final JProgressBar progressBar = new JProgressBar();
 
 	public DebugWindow() throws HeadlessException {
 		JPanel buttonLayout = new JPanel(new FlowLayout());
@@ -78,18 +78,24 @@ public class DebugWindow extends JFrame implements ActionListener {
 		if ("import debug legends".equals(e.getActionCommand())) {
 			xmlImportButton.setEnabled(false);
 			final JFileChooser chooser = new JFileChooser();
-			chooser.showOpenDialog(null);
-			progressBar.setIndeterminate(true);
+                        chooser.setFileFilter(new XMLFilter());
+			if(chooser.showOpenDialog(null) != JFileChooser.APPROVE_OPTION)
+                        {
+                            xmlImportButton.setEnabled(true);
+                            return;
+                        }
+			
 			Runnable r = new Runnable() {
-				public void run() {
-					if ((dwarfList = Control.ImportXML(chooser.getSelectedFile().getPath(), DebugWindow.this)) != null) {
-						enableAllButtons();
-					} else {
-						xmlImportButton.setEnabled(true);
-						
-					}
-					progressBar.setIndeterminate(false);
-				}
+                            public void run() {
+                                if ((dwarfList = Control.ImportXML(chooser.getSelectedFile().getPath(), DebugWindow.this)) != null) {
+                                    progressBar.setIndeterminate(false);    
+                                    JOptionPane.showMessageDialog(rootPane, "XML file finished importing.", "Import finished", JOptionPane.INFORMATION_MESSAGE);
+                                    enableAllButtons();
+                                } else {
+                                    xmlImportButton.setEnabled(true);	
+                                    progressBar.setIndeterminate(false);
+                                }
+                            }
 			};
 			Thread t = new Thread(r);
 			t.start();
@@ -100,5 +106,17 @@ public class DebugWindow extends JFrame implements ActionListener {
 			listWindow.setVisible(true);
 		}
 	}
+}
 
+class XMLFilter extends FileFilter
+{
+    @Override
+    public boolean accept(File file) {
+        return file.isDirectory() || file.getName().toLowerCase().endsWith(".xml");
+    } 
+
+    @Override
+    public String getDescription() {
+        return "XML File";
+    }
 }
