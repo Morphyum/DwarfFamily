@@ -265,15 +265,38 @@ public class Control {
 
             Races.set(i, String.valueOf(raw));
         }
-        importedFilename = filename;
+        importedFilename = filename.substring(0, filename.lastIndexOf('.'));
         activeRaceName = desiredRace;
         
         return dwarfs;
     }
 
     public static void GedExportTest(ArrayList<Dwarf> dwarfs) throws SAXException, IOException {
-        PrintWriter writer = new PrintWriter("dwarf.ged", "UTF-8");
-        for (int i = 0; i < dwarfs.size(); i++) {
+        PrintWriter writer = new PrintWriter(importedFilename + ".ged", "UTF-8");
+        writer.println("0 HEAD");
+		writer.println("1 GEDC");
+		writer.println("2 VERS 5.5.1");
+		writer.println("2 FORM LINEAGE-LINKED");
+		writer.println("1 CHAR UTF-8");
+		writer.println("1 LANG English");
+		writer.println("1 SOUR MYDWARF");
+		writer.println("2 NAME MyDwarf Family Tree Builder");
+		writer.println("2 VERS 5.5.1");
+		writer.println("2 _RTLSAVE RTL");
+		for (int i = 0; i < dwarfs.size(); i++) {
+			dwarfs.get(i).getName();
+            writer.println("0 @I" + dwarfs.get(i).getId() + "@ INDI");
+            writer.println("1 NAME " + dwarfs.get(i).getNewName());
+			writer.println("2 GIVN " + dwarfs.get(i).getGIVName());
+			writer.println("2 SURN " + dwarfs.get(i).getSURName());
+            writer.println("1 SEX " + dwarfs.get(i).getGender().substring(0, 1));
+            writer.println("1 BIRT");
+            writer.println("2 DATE " + dwarfs.get(i).getBirthday() + " " + dwarfs.get(i).getBirthyear());
+            writer.println("1 DEAT");
+            writer.println("2 DATE " + dwarfs.get(i).getDeathday() + " " + dwarfs.get(i).getDeathyear());
+            writer.println("");
+        }
+		for (int i = 0; i < dwarfs.size(); i++) {
             if (dwarfs.get(i).getGender().contentEquals("MALE")) {
                 if (dwarfs.get(i).getSpouse() != null) {
                     writer.println("0 @F" + dwarfs.get(i).getId() + "@ FAM");
@@ -286,17 +309,7 @@ public class Control {
                 }
             }
         }
-        for (int i = 0; i < dwarfs.size(); i++) {
-            writer.println("0 @I" + dwarfs.get(i).getId() + "@ INDI");
-            writer.println("1 NAME " + dwarfs.get(i).getName());
-            writer.println("1 SEX " + dwarfs.get(i).getGender().substring(0, 1));
-            writer.println("1 BIRT");
-            writer.println("2 DATE " + dwarfs.get(i).getBirthday() + " " + dwarfs.get(i).getBirthyear());
-            writer.println("1 DEAT");
-            writer.println("2 DATE " + dwarfs.get(i).getDeathday() + " " + dwarfs.get(i).getDeathyear());
-            writer.println("");
-        }
-
+		writer.println("0 TRLR");
         writer.close();
 
     }
