@@ -265,7 +265,7 @@ public class Control {
 
             Races.set(i, String.valueOf(raw));
         }
-        importedFilename = filename;
+        importedFilename = filename.substring(0, filename.lastIndexOf('.'));
         activeRaceName = desiredRace;
         
         return dwarfs;
